@@ -1,0 +1,2 @@
+Install squid and squidguard
+sudo apt-get install squid3 squidguard

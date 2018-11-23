@@ -1,0 +1,2 @@
+Install NFS
+sudo apt-get install nfs-kernel-server
