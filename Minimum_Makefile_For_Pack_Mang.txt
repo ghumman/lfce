@@ -1,8 +1,0 @@
-all:
-        g++ CppHelloWorld.cpp -o CppHelloWorld
-install:
-        install -d $(DESTDIR)/usr/bin
-        install CppHelloWorld $(DESTDIR)/usr/bin
-clean:
-        rm -f CppHelloWorld
-~                              
