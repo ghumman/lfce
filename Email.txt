@@ -1,4 +1,0 @@
-Install Postfix(MTA) and Dovecot(Email Server(IMAP/POP3))
-sudo apt-get install postfix dovecot-imapd dovecot-pop3d
-
-
