@@ -1,2 +1,27 @@
 Install squid and squidguard
 sudo apt-get install squid3 squidguard
+
+sudo vim /etc/squid/squid.conf
+# Search /INSERT and adding following code
+acl client1 src 192.168.33.10
+acl client2 src 192.168.33.20 
+acl allclients src 192.168.33.0/24
+
+http_access allow allclients !client1
+
+NOTE: All these things need to be before following line to work. 
+http_access deny all
+
+In order to use test it in firefox, for proxy for this example use 192.168.33.1.
+For testing it inside vagarant, assuming client1 is 192.168.33.10 and client2 is 192.168.33.20. Then do following. 
+sudo apt-get update
+sudo apt-get install w3m
+sudo vim /etc/environment(add following line)
+http_proxy="http://192.168.33.1:3128/"
+
+NOTE: clients need to be on same subnet. So for vagrant though it can ping other ip addresses of local machine, if we use those other ip address, vagrant machine will actually be localhost. 
+NOTE: Make sure there's no iptables rule set. 
+
+
+
+
