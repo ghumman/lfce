@@ -9,3 +9,110 @@ sudo apt-get purge php*
 sudo apt-get install apache2
 sudo apt-get install php7.0 libapache2-mod-php7.0
 sudo /etc/init.d/apache2 restart
+
+Inside vagrant
+[vagrant up]
+[vagrant ssh]
+
+sudo apt-get install apache2
+
+Verify apache is installed and running
+ps -ef | grep apache | grep -v grep
+
+Server directory 
+DocumentRoot /var/www
+
+Access log is at following location, normally.
+/var/log/apache2/
+access.log
+error.log
+
+Log Format
+LogFormat "%h %l %u %t \"%r\" %>s %b" [nickname]
+ %h	 Remote hostname or IP address
+ %l	 Remote log name
+ %u	 Remote user if the request is authenticated
+ %t	 Date and time when the request was received
+ %r	 First line of request to the server
+ %>s	 Final status of the request
+ %b	 Size of the response [bytes]
+
+If there's following error: 
+Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName
+It's just a warning. In order to remove it add following line to /etc/apache2/apache2.conf
+ServerName localhost
+
+Adding Virtualhost
+If we want to make a website www.ghummantech.com [inside vagrant]
+1) Create a directory at /var/www/ghummantech (no html dir exists) and add following content to ghummantech/index.html
+<html>
+<body>
+<p>ghummantech created.<p>
+</body>
+</html>
+
+2) sudo vim /etc/apache2/sites-available/ghummantech.conf
+(minimum)
+<VirtualHost *:80>
+	DocumentRoot /var/www/ghummantech
+	ServerName www.ghummantech.com
+</VirtualHost>
+(full version)
+<VirtualHost *:80>
+     ServerAdmin admin@ghummantech.com 
+     DocumentRoot /var/www/ghummantech
+     ServerName www.ghummantech.com
+     ServerAlias www.ghummantech.org ghummantech.com
+     ErrorLog /var/www/ghummantech/error.log
+     LogFormat "%v %l %u %t \"%r\" %>s %b" myvhost
+     CustomLog /var/www/ghummantech/access.log	myvhost
+</VirtualHost>
+3) 
+cd /etc/apache2/sites-available/
+sudo a2ensite /etc/apache2/sites-available/ghummantech.conf
+
+4) sudo vim /etc/hosts. Add following
+127.0.0.1	www.ghummantech.com
+127.0.0.1	ghummantech.com
+
+5) sudo service apache2 restart (sudo systemctl restart apache)
+
+NOTES: 
+a) On my linux laptop, I saw that if you put 'VirtualHost' paragraph inside a seperate file like /etc/apache/sites-available/ghummantech.conf, it doesn't work. I need to add VirtualHost paragraph inside 000-default.conf file. I put new paragrah in the beginning.  
+
+b) Without putting names of websites with server address inside /etc/hosts, none of the redirection method worked. 
+Redirection can be done using one of the following techniques, maybe even more. 
+i) Inside VirtualHost use ServerAlias www.ghummantech.org ghummantech.com 
+ii) It didn't work using curl, but worked on firefox
+<VirtualHost *:80>
+        Servername 54borden.com
+        RedirectMatch permanent ^/(.*) http://www.54borden.com/$1
+</VirtualHost>
+iii) sudo ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/
+Inside 000-default.conf add following inside VirtualHost
+        RewriteEngine On
+        RewriteCond %{HTTP_HOST} !^www\. [NC]
+        RewriteRule ^(.*)$ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+#####################################################################
+#	Self Signed/Certificate Signing Request 
+#	SSL (Secure Sockets Layer)
+##################################################################### 
+
+1) Enable SSL module
+a2enmod ssl
+
+2) Create key and certificates
+mkdir -p /etc/apache2/ssl-certs
+openssl req -x509 -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl-certs/apache.key -out /etc/apache2/ssl-certs/apache.out  
+
+3) Configure 000-defulat-site
+<VirtualHost *:443>
+	ServerName www.mynewsite.com
+	DocumentRoot /var/www/mynewsite.com
+	SSLEngine on
+	SSLCertificateFile /etc/apache2/ssl-certs/apache.out
+	SSLCertificateKeyFile /etc/apache2/ssl-certs/apache.key	
+<VirtualHost>
+
+

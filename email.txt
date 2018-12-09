@@ -1,4 +1,93 @@
 Install Postfix(MTA) and Dovecot(Email Server(IMAP/POP3))
 sudo apt-get install postfix dovecot-imapd dovecot-pop3d
 
+#########################################################
+#Postfix smtp, make sure all clients are able to send emails to server
+#########################################################
 
+On server: 
+sudo apt-get install postfix
+(Select Internet site and hostname as mail name)
+#listen to all interfaces
+sudo postconf -e "inet_interfaces=all"
+#enable trusted subnets
+sudo postconf -e "mynetworks_style=subnet"
+
+
+On client(192.168.33.10): 
+telnet 192.168.33.1 25
+helo localhost
+mail from:client1@localhost
+rcpt to:root@localhost
+data
+Subject: Test sent from client1 to server
+Tesing 1, 2, 4
+.
+
+Test if we get the mail on server.
+#mailutils install mail, and i think is only good for viewing emails
+#mutt shows emails and sends emails, and it installs postfix, if
+# it's already not installed
+
+# Above assumption is wrong. mail can be used to send mail like following from terminal
+# mail -s "How are you?" client1@localhost
+Cc
+(Keep writing once you're done, press <Ctrl+D>)
+sudo apt-get install mailutils
+mail
+
+############################################################
+#Enable dovecot as IMAP server
+############################################################
+
+At this point without having mutt and dovecott (but having mail and postfix), we can send messages and view messages from the same machine. 
+
+But from a remote machine we can still use tellnet to login to server machine and send from emails from one user to another. but won't be able to see email like using this kind of command. "mutt -f client1@192.168.0.106"
+
+
+sudo apt-get install mutt dovecot-imapd dovecot-pop3d dovecot-core dovecot-lmtpd
+sudo vim /etc/dovecot/dovecot.conf
+(uncomment this line: listen =*, ::)
+sudo systemctl restart dovecot
+(Doing this vagrant client with different IP address works for follwoing command but client on same network but on a different machine doesn't work)
+mutt -f imap://client1@192.168.0.106/
+# It doesn't work on different machine because other machine it's looking for TLS(transport layer security) / SSL (secure socket layer). After enabling it in next step, above command work on remote host
+
+###########################################################
+#Enforce TLS/SSL for IMAP server
+###########################################################
+sudo vim /etc/dovecot/conf.d/10-ssl.conf
+#Edit 
+ssl = required
+ssl_cert = </etc/dovecot/dovecot.pem
+ssl_key = </etc/dovecot/private/dovecot.pem
+#generate certificates
+cd /usr/share/dovecot
+./mkcert.sh
+sudo systemctl restart dovecot
+#Mutt works but still Thunderbird is not working
+
+##########################################################
+#Sending email using SMTP Auth (SASL-Simple Authentication and Security Layer)
+##########################################################
+
+sudo postconf -e "mynetworks_style=host"
+sudo postconf -e "disable_dns_lookups=yes"
+sudo postconf -e "smtpd_tls_auth_only=no"
+sudo systemctl restart postfix.service
+
+#enable sasl in dovecot
+sudo vim /etc/dovecot/conf.d/10-master.conf
+#uncomment following lines inside section "service auth"
+unix_listener /var/spool/postfix/private/auth {
+	mode = 0666
+}
+
+#enable sasl in postfix
+sudo postconf -e "smtpd_sasl_type = dovecot"
+sudo postconf -e "smtpd_sasl_auth_enable = yes"
+sudo postconf -e "smtpd_recipient_restrictions = 	\
+	permit_mynetworks,				\
+	permit_sasl_authenticated,			\
+	reject_unauth_destination"
+	
