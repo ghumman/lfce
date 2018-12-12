@@ -58,3 +58,66 @@ modprobe -a ip_tables	(a: all)
 
 Check System and Service Manager
 ps --pid 1
+
+An Example of Iptables, this is give you internet access .
+sudo iptables -P INPUT DROP
+sudo iptables -P OUTPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 53 -j ACCEPT
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A INPUT -j ACCEPT
+sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+sudo iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+sudo iptables -A OUTPUT -j ACCEPT
+
+If server has a local network at NIC 'enp0s31f6' and getting internet at NIC 'wlp1s0' and vagrant VMs are using virtual NIC 'vboxnet1'. Following needs to be done in order for local devices to get to internet or vagrant VMs.
+
+Server: 
+	(enp0s31f6)->	10.10.0.10/24
+	(wlp1s0)->	192.168.0.106/24
+	(vboxnet1)->	192.168.33.1/24
+	iptables -t nat -A POSTROUTING -o wlp1s0 -j MASQUERADE
+	iptables -A FORWARD -i wlp1s0 -o enp0s31f6 -m state --state RELATED,ESTABLISHED -j ACCEPT
+	iptables -A FORWARD -i enp0s31f6 -o wlp1s0 -j ACCEPT
+Local Device:
+	(eno1)->	10.10.0.20/24
+	(/etc/network/interfaces)
+	auto eno1
+	iface eno1 inet static
+		address 10.10.0.20
+		netmask 255.255.255.0
+		gateway 10.10.0.10
+	(/etc/resolv.conf)
+	nameserver 8.8.8.8
+Vagrant VM: 
+	(eth1)->	192.168.33.10/24 
+
+
+In order to connect from AWS machine using VPN to a local network through server, use following. 
+Server: 
+	(enp0s31f6)->	10.10.0.10/24
+	(vpn0)->	146.209.231.104/22
+	iptables -t nat -A POSTROUTING -o vpn0 -j MASQUERADE
+        iptables -A FORWARD -i vpn0 -o enp0s31f6 -m state --state RELATED,ESTABLISHED -j ACCEPT
+        iptables -A FORWARD -i enp0s31f6 -o vpn0 -j ACCEPT
+	iptables -A PREROUTING -t nat -i vpn0 -p tcp --dport 2222 -j DNAT --to 10.10.0.20:22
+
+Client: 
+	(eno1)->	10.10.0.20/24
+	(/etc/sshd/sshd_config)
+	PermitRootLogin yes
+	-> systemctl restart sshd
+	(Also need to set root password)
+	passwd
+AWS client:
+	(eth0)->	10.225.116.123/24
+	ssh -p 2222 146.209.231.104
+
+

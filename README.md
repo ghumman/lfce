@@ -1,6 +1,7 @@
 This repo has linux administration services code for LFCE exam preparations and practice.
 
 Important preparation links. 
+https://www.safaribooksonline.com/videos/linux-foundation-certified/9780134774015/9780134774015-LFCE_01_01_06
 https://github.com/rilindo/LFCE_Practice_Exams
 http://www.tecmint.com/installing-network-services-and-configuring-services-at-system-boot/
 https://linuxacademy.com/linux/training/course/name/linux-foundation-certified-systems-engineer
