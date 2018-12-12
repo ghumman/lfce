@@ -1,0 +1,3 @@
+Install samba and samba client on both server and client
+sudo apt-get install samba smbclient
+

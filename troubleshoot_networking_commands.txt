@@ -1,0 +1,35 @@
+ping: 
+	Use: look for icmp_seq numbers, if any packet is being lost.
+	ttl is maximum distance, can be 128 router
+	sudo ping -f localhost (flood: can be used for stress test)
+	sudo ping -f -s 4096 localhost (-s: packet size)
+
+traceroute: 
+	Not useful anymore. In early internet days, 
+	it was used to see which routers are used.
+	Now you'll see ***.
+
+nmap:
+	It's port scanner
+	Example:
+	nmap localhost
+	nmap -sn 192.168.0.0/24
+arp:	
+	Address Resolution Protocol
+	
+telnet: 
+	telnet protocol
+	telnet www.google.com 80	(Followed by GET)
+
+openssl: 
+	crytography toolkit implementing SSL and TLS
+	openssl s_client -connect google.com:443
+
+tcpdump/wireshark:
+	dump traffic on a network
+	tcpdump -i wlp1s0 -w capture.pcap (write results to capcure.pcap)
+	tcpdump -i wlp1s0 port 21 (for ftp)
+
+ss:
+	socket statistics	(netstat: deprecated)
+	ss -tua	(t:tcp u:udp a:all)

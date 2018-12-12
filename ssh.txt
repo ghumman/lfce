@@ -1,0 +1,27 @@
+Client 1: 
+	a) 	
+	ssh-keygen -t rsa
+	ssh-copy-id 192.168.33.20
+	ssh 192.168.33.20
+	This will require passphrase every time logging in
+	b) 
+	ssh-keygen -t rsa
+	ssh-agent /bin/bash
+	ssh-add
+	ssh 192.168.33.20
+	Won't require passphrase everytime
+
+Port Forwarding
+	ssh -fNL 4444:rhatcert.com:80 root@192.168.33.20
+	(Testing) w3m http://localhost:4444
+	
+	Install apache server on 192.168.33.20
+	ssh -fNL 5555:localhost:80 root@192.168.33.20
+	(Testing) w3m http://localhost:5555
+	
+	ssh to client2 using a different port
+	ssh -fNL 6666:localhost:22 root@192.168.33.20
+	(Testing) ssh -p 6666 localhost
+
+VNC Server
+	

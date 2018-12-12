@@ -1,0 +1,76 @@
+sudo apt-get install vlan
+sudo vim /etc/network/interfaces
+"
+auto eth1.7
+iface eth1.7 inet static
+	address 10.20.0.1
+	netmask 255.255.255.0
+	vlan-raw-device eth1
+      	up route add -net 10.10.0.0/24 gw 192.168.33.10 dev eth1
+	up route add -net 10.20.0.0/24 gw 192.168.33.10 dev eth1
+"
+Note: 
+In order to remove vlan-raw-device, once it is up. Use
+ip link del eth1.7 (or)
+vconfig rem eth1.7
+
+From internet you can also do: 
+"
+auto eth0
+iface eth0 inet static
+address 192.168.50.2
+netmask 255.255.255.0
+gateway 192.168.50.100
+#########{Static Route}###########
+up ip route add 10.10.20.0/24 via 192.168.50.100 dev eth0
+"
+
+For Dynamic routing. 
+Setting it up on vagrant
+Set static ip address on vlan like following. 
+"
+auto eth1.7
+iface eth1.7 inet static
+        address 10.20.0.1
+        netmask 255.255.255.0
+        vlan-raw-device eth1
+"
+Install quagga
+apt-get install quagga
+
+Modify following files
+/etc/quagga/daemons
+
+zebra=yes
+ospfd=yes
+
+Create /etc/quagga/zebra.conf
+
+interface eth0
+  ip address 10.0.2.15/24
+  ipv6 nd suppress-ra
+interface eth1
+  ip address 192.168.33.20/24
+  ipv6 nd suppress-ra
+interface eth1.7
+  ip address 10.20.0.10/24
+  ipv6 nd suppress-ra
+interface lo
+ip forwarding
+line vty
+
+Create /etc/quagga/ospfd.conf
+
+interface eth0
+interface eth1
+interface eth1.7
+interface lo
+router ospf
+  network 10.0.2.0/24 area 0.0.0.0
+  network 192.168.33.0/24 area 0.0.0.0
+  network 10.20.0.0/24 area 0.0.0.0
+line vty
+
+Restart quagga.
+service quagga restart (or)
+systemctl restart quagga
