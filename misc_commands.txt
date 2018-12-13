@@ -1,0 +1,33 @@
+List all users
+cat /etc/passwd
+
+List hosts aliases for ip address
+cat /etc/hosts
+
+List variable values (http_proxy is also provided here)
+cat /etc/environment
+
+List nameservers (DNS nameserver can be provided here or inside /etc/network/interfaces)
+cat /etc/resolv.conf
+
+List file sharing directories (It's activated using command 'mount -a')(Used for both nfs, cifs and automount)
+(I think, normally  used on client side)
+cat /etc/fstab
+
+List NFS sharing directories(for cifs/samba it's /etc/samba/smb.conf)(normally used on server side)
+cat /etc/exports
+
+List hostname
+cat /etc/hostname
+
+This file assigns persistent names to network interfaces
+/etc/iftab
+
+Info about distribution
+cat /etc/lsb_release
+
+Following file is time based job scheduler
+/etc/crontab
+
+List port numbers and services names
+cat /etc/services

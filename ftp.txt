@@ -1,0 +1,4 @@
+sudo apt-get install vsftpd
+sudo apt-get install lftp
+
+

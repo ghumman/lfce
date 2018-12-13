@@ -1,0 +1,14 @@
+Install
+sudo apt-get install autofs
+
+Assuming server is all set for nfs(/etc/exports) and samba(/etc/samba/smb.conf), inside client
+sudo vim /etc/auto.master
+"
+/auto	/etc/auto.auto --timeout=10	# for 10 seconds
+"
+
+sudo vim /etc/auto.auto
+"
+data	-rw	192.168.33.10:/srv/data
+lab	-fstype=cifs,rw,username=linda,password=linda	://192.168.33.10/labshare
+"
