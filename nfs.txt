@@ -8,5 +8,7 @@ Inside server
 Inside client
 sudo mount 192.168.33.10:/home/vagrant/nfs_server /home/vagrant/remote_share
 
+In order to see what share drives are available on a host/client
+showmount -e 192.168.33.10
 
 
