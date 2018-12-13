@@ -1,3 +1,43 @@
 Install samba and samba client on both server and client
 sudo apt-get install samba smbclient
 
+On vagrant client1:
+	mkdir smb_share
+	sudo vim /etc/samba/smb.conf
+	[mainexports]
+   		comment = client1 sharing with client2
+   		path = /home/vagrant/smb_share
+   		read only = no
+   		guest ok = yes
+   		valid users = vagrant
+	
+	smbpasswd -a vagrant
+	service smbd restart
+
+On vagrant client2:
+	smbclient -U vagrant //192.168.33.10/mainexports
+	Doing above you'll enter into 'smb' command line
+	In order to mount do following. 
+	sudo apt-get install cifs-utils
+	mount -o username=vagrant //192.168.33.10/mainexports /home/vagrant/remote_smb_share
+	(or)
+	mount -o username=vagrant,password=vagrant //192.168.33.10/mainexports /home/vagrant/remote_smb_share
+	(or)
+	sudo vim /etc/fstabs (add following line)
+	//192.168.33.10/mainexports	/home/vagrant/remote_smb_share	cifs	creds=/root/creds,_netdev	0 0
+	sudo vim /root/creds
+	username=vagrant
+	password=vagrant
+	Then in order to mount, use following command
+	mount -a
+
+If you want to see available samba share drives on a client, use following command
+smbclient -L 192.168.33.10	(ignore password prompt and hit enter)
+
+For adding a user linda in group users
+useradd -G users linda
+For modifying group of user linda to users
+usermod -aG users linda
+		
+Check syntax errors in /etc/samba/smb.conf file
+testparm
