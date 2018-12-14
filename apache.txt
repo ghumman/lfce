@@ -82,7 +82,7 @@ a) On my linux laptop, I saw that if you put 'VirtualHost' paragraph inside a se
 
 b) Without putting names of websites with server address inside /etc/hosts, none of the redirection method worked. 
 Redirection can be done using one of the following techniques, maybe even more. 
-i) Inside VirtualHost use ServerAlias www.ghummantech.org ghummantech.com 
+i) Inside VirtualHost use ServerAlias www.ghummantech.org ghummantech.com (also in /etc/hosts add: 192.168.33.88 www.ghummantech.org ghummantech.com)
 ii) It didn't work using curl, but worked on firefox
 <VirtualHost *:80>
         Servername 54borden.com
@@ -115,4 +115,104 @@ openssl req -x509 -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl-certs/apac
 	SSLCertificateKeyFile /etc/apache2/ssl-certs/apache.key	
 <VirtualHost>
 
+#######################################################################
+#	My understanding about Apache in ubuntu
+#######################################################################
+
+Virtual host is needed when you want to host more than one site. 
+It can be name-based or ip-based or both.
+
+Name-Based:
+
+one website 'business.example.com' hosted at say '/vhost/business.example.com' and other website 'sales.example.com' hosted at say '/vhost/sales.example.com'. Inside /etc/hosts all www.business.example.com, business.example.com, www.sales.example.com and sales.example.com are refering to one ip address which is also localhost/eth0/eth1 ip address, meaning original website /var/www/html will also be hosted using the same ip adress.
+Go to /etc/apache/sites-enabled/000-default and at the end of the file add following lines
+<VirtualHost *:80>
+        ServerName www.business.example.com
+        ServerAlias www.business.example.com business.example.com
+        DocumentRoot /vhost/business.example.com/
+</VirtualHost>
+<VirtualHost *:80>
+        ServerName www.sales.example.com
+        ServerAlias www.sales.example.com sales.example.com
+        DocumentRoot /vhost/sales.example.com/
+</VirtualHost>
+To access with SSL like https://www.business.example.com, after doing above step, do following
+1) 
+cd /etc/apache2/mods-available
+sudo a2enmod ssl
+2)
+sudo ln -s /etc/apache2/site-available/default-ssl /etc/apache2/sites-enable/	(or just copy it)
+sudo vim /etc/apache2/sites-enable/default-ssl
+3) 
+a) After the first line <IfModule mod_ssl.c>
+NameVirtualHost 192.168.33.10:443
+b) Replace <VirtualHost _default_:443> with <VirtualHost 192.168.33.10:443> (Trying to implement name based virtual host)
+c) At the end of the file but before last line </IfModule>, add following
+<VirtualHost 192.168.33.10:443>
+        ServerName www.business.example.com
+        ServerAlias www.business.example.com business.example.com
+        DocumentRoot /vhost/business.example.com/
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+</VirtualHost>
+<VirtualHost 192.168.33.10:443>
+        ServerName www.sales.example.com
+        ServerAlias www.sales.example.com sales.example.com
+        DocumentRoot /vhost/sales.example.com/
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+</VirtualHost>
+
+
+IP-Based And/Or Both
+
+IP based means assign a seperate ip address to every domain (name based virtual host). It's the recommended way to implement SSL. As SSL has issues (though it kind of works in above example) when multiple sites are referring to same ip address. Assign ip addresses using following commands. 
+sudo ip addr add 192.168.33.88/24 dev eth1
+sudo ip addr add 192.168.33.89/24 dev eth1
+Update /etc/hosts for different websites
+Edit 000-default as follows
+<VirtualHost 192.168.33.88:80>
+        ServerName www.business.example.com
+        ServerAlias www.business.example.com business.example.com
+        DocumentRoot /vhost/business.example.com/
+</VirtualHost>
+<VirtualHost 192.168.33.89:80>
+        ServerName www.sales.example.com
+        ServerAlias www.sales.example.com sales.example.com
+        DocumentRoot /vhost/sales.example.com/
+</VirtualHost>
+In default-ssl there's no need for line 'NameVirtualHost 192.168.33.10:443' as every VirtualHost is going to have a seperate ip address. Original one can stay as <VitualHost _default_:443>. And add the folloing. 
+<VirtualHost 192.168.33.88:443>
+        ServerName www.business.example.com
+        ServerAlias www.business.example.com business.example.com
+        DocumentRoot /vhost/business.example.com/
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+</VirtualHost>
+<VirtualHost 192.168.33.89:443>
+        ServerName www.sales.example.com
+        ServerAlias www.sales.example.com sales.example.com
+        DocumentRoot /vhost/sales.example.com/
+        SSLEngine on
+        SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+</VirtualHost>
+
+#################################################################
+#	Password Protected Sub Directory
+#################################################################
+
+
+Inside 000-default or default-ssl(for https) or create new file '/etc/apache2/sites-enabled/secure-dir.conf'(manual recommends it), and add following insdie VirtualHost Directory for desired website. If created new file and added independently I think I will look for secure directory inside /var/www/html(default website)
+<Location /secure/>
+	AuthType Basic
+	AuthName "Restricted Area"
+	AuthUserFile secure.users
+	Require valid-user
+</Location>
+Then to create username/password/file go to /etc/apache2 and use following
+htpasswd -c secure.users ghumman
 
