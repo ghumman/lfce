@@ -31,3 +31,16 @@ Following file is time based job scheduler
 
 List port numbers and services names
 cat /etc/services
+
+If you don't have systemd, use following to disable a service like 'ufw'
+update-rc.d -f ufw remove	(in vagrant vm it didn't work with ufw but worked with nfs-kernel-server)
+After above command, I had issues enabling the service nfs-kernel-server for startup. I used following to fix it. 
+update-rc.d nfs-kernel-server default
+It turns out that inside /etc/init.d/ some files are the services and some are pointing to /lib/init/upstart-job
+Following is another way mentioned on internet but didn't work for my vagrant vms. 
+echo 'manual' | sudo tee /etc/init/mysql.override
+Here's a summary: 
+If service is SysV(Also called init.d): Use 1) 'sudo service nfs-kernel-server stop', 2) 'sudo update-rc.d -f nfs-kernel-server remove' to disable and 'sudo update-rc.d nfs-kernel-server default'	(ntp didn't work)
+If service is Upstart: Use 'mv /etc/init/smbd.conf /etc/init/smbc.conf.disabled' and move it back to enable it.
+If service is Systemd: Use systemctl enable/disable command. 
+
