@@ -1,0 +1,84 @@
+To install dns server. 
+sudo apt-get install bind9
+
+To set up caching server(whatever that means)
+(I think by default it's working as caching server and nothing needs to be done as the response for command 'dig @localhost google.com' remains same, but following is what manual says)
+sudo vim /etc/bind/named.conf.options
+(add following lines)
+listen-on port 53 { any; };
+allow-query {any;};
+recursion yes;
+(It didn't work on vagrant vm)
+
+Authoritative Forward Zone (Worked at vagrant vm)
+"
+• 30 second TTL
+• www.example.com has the address 192.168.111.45 and the IPv6 address fe80::22c9:d0ff:1ecd:c0ef
+• foo.example.com has the address 192.168.121.11
+• bar.example.com has a CNAME pointing to www.example.com
+• host1.example.com through host100.example.com have the addresses 10.20.45.1 through 10.20.45.100
+"
+
+Add following to /etc/bind/named.conf.local
+zone "example.com." {
+        type master;
+        file "/etc/bind/example.com.zone";
+};
+
+Create following file /etc/bind/example.com.zone
+$TTL    30
+@       IN      SOA     localhost. root.example.com. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+@       IN      NS      localhost.
+www.example.com.        IN      A       192.168.111.45
+www.example.com.        IN      AAAA    fe80::22c9:d0ff:1ecd:c0ef
+foo.example.com.        IN      A       192.168.121.11
+bar.example.com.        IN      CNAME   www.example.com.
+$GENERATE 1-100 host$.example.com.      IN      A       10.20.45.$
+
+Check the syntax using following command
+sudo named-checkconf -z
+
+In order to test it use following commands. 
+dig @localhost -t A www.example.com
+dig @localhost -t AAAA www.example.com
+dig @localhost -t A foo.example.com
+dig @localhost -t CNAME bar.example.com
+dig @localhost -t A host7.example.com
+dig @localhost -t A host27.example.com
+
+Reverse DNS zone for 10.20.45.0/255.255.255.0 as host$.example.com
+
+Add following to /etc/bind/named.conf.local
+zone "45.20.10.in-addr.arpa." {
+        type master;
+        file "/etc/bind/45.20.10.in-addr.arpa.zone";
+};
+
+
+Create the following file /etc/bind/45.20.10.in-addr.arpa.zone
+$TTL    604800
+@       IN      SOA     localhost. root.example.com. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      localhost.
+$GENERATE 1-254 $      IN      PTR       host$.example.com 
+
+Check the syntax using following command
+sudo named-checkconf -z
+
+Reload the server using following (though tests worked without doing it)
+rndc reload
+
+Test using following
+host 10.20.45.7 localhost
+host 10.20.45.37 localhost
+host 10.20.45.73 localhost

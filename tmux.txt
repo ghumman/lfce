@@ -1,0 +1,13 @@
+sudo apt-get install tmux
+
+Ctrl+b -> ?	Help
+Ctrl+b -> "	Breaks horizontally
+Ctrl+b -> %	Breaks vertically
+Ctrl+b -> o	Go to next pane (same bash)
+Ctrl+b -> Ctrl+o Bring next pane to current location (Used to switch panes)
+Ctrl+b -> Ctrl+space Switch between horizontal and vertical panes
+Ctrl+b -> !	This will take the pane out of layout and make it a new window (new bash)
+Ctrl+b -> :	To give a command 
+	:join-pane -t # (0 or 1 or else) to combine window back to pane. -t=to(also -s=source)
+
+
