@@ -4,6 +4,10 @@ cat /etc/passwd
 List hosts aliases for ip address
 cat /etc/hosts
 
+List aliases, normally used when setting up email users
+cat /etc/aliases
+After setting new aliases or modifying above file, run 'newaliases'
+
 List variable values (http_proxy is also provided here)
 cat /etc/environment
 
@@ -44,3 +48,4 @@ If service is SysV(Also called init.d): Use 1) 'sudo service nfs-kernel-server s
 If service is Upstart: Use 'mv /etc/init/smbd.conf /etc/init/smbc.conf.disabled' and move it back to enable it.
 If service is Systemd: Use systemctl enable/disable command. 
 
+When creating Self Signed keys for SSL using openssl, the option -nodes (not decrypted -> maybe) is used to encrpty the private key. If this optin is provided it will ask for passphrase. In case, openssl is used to create key and crt to be used in dovecot ssl, this argument should be used, otherwise you won't be able to connect to mail server. 
