@@ -1,0 +1,44 @@
+(In order to install the right way, follow guidelines on website, but following does the job)
+Install 
+sudo apt-get install docker docker.io
+
+Help
+docker -h/docker --help
+
+Search for package/docker image 'linux' (If you want to filter for results having stars 5 or more add -s 5)
+docker search linux
+
+Create a docker image 'test', using oraclelinux version 7
+docker create --name test oraclelinux:7
+
+Create a docker image 'test', using oraclelinux version 7 with a specific software
+docker create --name test oraclelinux:7	/bin/bash
+
+Information about entire docker system about containers/statuses 
+docker info
+
+In order to pull/download an image
+docker pull ubuntu
+
+In order to see what images are downloaded
+docker images
+
+In order to see all containers
+docker ps -a
+
+Run a command (following will automatically pull the image if not available)
+docker run fedora echo "hello"
+
+Run a container with a terminal 
+docker run -it ubuntu /bin/bash
+
+Recent activity from a particular container
+docker logs b336de20e2ff
+(for detailed inspection)
+docker inspect b336de20e2ff
+
+Create your own container
+docker create -it --name mycontainer centos:6.8 /bin/bash
+
+Remove a container
+docker rm 3f1e1e65703a
