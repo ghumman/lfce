@@ -1,0 +1,44 @@
+Install 
+sudo apt-get install isc-dhcp-server
+
+Assign static ip address(/etc/network/interfaces)
+auto enp0s31f6
+iface enp0s31f6 inet static
+        address 10.5.5.1
+        netmask 255.255.255.0
+
+
+Declare which interface to use for dhcp server
+sudo vim /etc/default/isc-dhcp-server
+INTERFACES="enp0s31f6"
+
+
+
+Add following to /etc/dhcp/dhcp.conf
+ddns-update-style none;
+option domain-name "example.org";
+option domain-name-servers ns1.example.org, ns2.example.org;
+default-lease-time 600;
+max-lease-time 7200;
+authoritative;
+log-facility local7;
+# A slightly different configuration for an internal subnet.
+subnet 10.5.5.0 netmask 255.255.255.224 {
+  range 10.5.5.26 10.5.5.30;
+  option domain-name-servers ns1.internal.example.org;
+  option domain-name "internal.example.org";
+  option subnet-mask 255.255.255.224;
+  option routers 10.5.5.1;
+  option broadcast-address 10.5.5.31;
+  default-lease-time 600;
+  max-lease-time 7200;
+}
+host desktop-node {
+         hardware ethernet a0:8c:fd:d6:bd:0f ;
+         fixed-address 10.5.5.30;
+ }
+
+dhcp leases can be found in following file
+/var/lib/dhcp/dhcpd.leases
+
+

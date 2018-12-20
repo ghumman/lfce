@@ -1,0 +1,14 @@
+Install
+sudo apt-get install ntp
+
+To Test
+ntpq -p
+
+To Peer(/etc/ntp.conf)
+peer 192.168.33.XX
+(On both nodes)
+
+To connect to an ntp server
+server 192.168.33.xx
+
+
