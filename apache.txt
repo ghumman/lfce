@@ -216,3 +216,80 @@ Inside 000-default or default-ssl(for https) or create new file '/etc/apache2/si
 Then to create username/password/file go to /etc/apache2 and use following
 htpasswd -c secure.users ghumman
 
+#################################################################
+#	Advanced Settings
+#################################################################
+
+1) cgi
+(common gateway interface)
+when user says www.54borden.com/scripts/foo.cgi?, run a script /new-cgi/foo.cgi
+it involves two steps. Route from script to new-cgi and then run the script
+Add following to 000-default.conf
+        ScriptAlias /scripts/   /new-cgi/
+        <Directory /new-cgi/>
+                Require all granted
+        </Directory>
+Content of /new-cgi/foo.cgi, it should be executable (chmod +x /new-cgi/foo.cgi)
+#!/bin/bash
+echo -e "\n"
+echo -e "Content-type: text/plain\n\n"
+echo -e "File is $1\n"
+# Enable cgi module
+a2enmod cgi
+#To test
+w3m http://54borden.com/scripts/foo.cgi?bar
+
+2) rewrite
+Redirect http://54borden.com/foo/.* to http://54borden.com/scripts/foo.cgi?.*
+Add following to 000-default.conf
+        RewriteEngine on
+        RewriteOptions inherit
+        RewriteRule ^/foo/(.*) /scripts/foo.cgi?$1 [L,PT]
+#Enable rewrite
+a2enmod rewrite
+#Test
+w3m www.54borden.com/foo/bar
+
+3) status
+Show status at www.54borden.com/server-status
+Add following to 000-default.conf
+        <Location /server-status/>
+                SetHandler server-status
+                Require ip 192.168.33.0/24 ::1 127.
+        </Location>
+#Enable status
+a2enmod status (default is enabled)
+#Test 
+w3m www.54borden.com/server-status/
+
+4) include
+Include/Read/Redirect html files inside html file
+#Add following to 000-default.conf
+        <Location /magic/>
+                Options +Includes
+                XBitHack on
+        </Location>
+#Enable include
+a2enmod include
+#Create following files
+/ipvhost/www.54borden.com/magic/index.html
+"
+<html>
+<head>
+<title>This file is a magic include file</title>
+</head>
+<body>
+<h1>This file is a magic include file</h1>
+<h2>Foo include below</h2>
+<!--#include virtual="includes/foo.html"-->
+<h2>Bar include below</h2>
+<!--#include virtual="includes/bar.html"-->
+</body>
+</html>
+"
+/ipvhost/www.54borden.com/magic/includes/foo.html
+this is foo file
+/ipvhost/www.54borden.com/magic/includes/bar.html
+this is bar file
+#Test
+w3m www.54borden.com/magic/index.html

@@ -24,4 +24,40 @@ Port Forwarding
 	(Testing) ssh -p 6666 localhost
 
 VNC Server
+	Install
+	sudo apt-get install tightvncserver xtightvncviewer
+
+	Start
+	vncserver
+
+	View
+	vncviewer localhost:1
+
+	View over/via ssh
+	vncview -via vagrant@client3 client3:1
+
+	Kill 
+	vncserver -kill :1
 	
+	To create vnc service at boot-up with systemd
+	sudo vim /etc/systemd/system/vncserver@.service
+	[Unit]
+	Description=Remote desktop service (VNC) on port :%I
+	After=syslog.target network.target
+	[Service]
+	Type=forking
+	User=student
+	ExecStartPre=-/usr/bin/vncserver -kill :%i
+	ExecStart=/usr/bin/vncserver :%i -localhost
+	PIDFile=/home/lee/.vnc/%H:%i.pid
+	ExecStop=-/usr/bin/vncserver -kill :%i
+	[Install]
+	WantedBy=multi-user.target
+	
+	(PIDFile need to be created manually)
+
+SSH using alias
+	sudo vim ~/.ssh/config
+	host friend
+		hostname client1
+		user vagrant

@@ -1,3 +1,14 @@
+For dns-clients/hosts which need to point to dns-servers. Use either /etc/resolv.conf but that would be overwritten on bootup, or add following line in /etc/network/interfaces
+dns-nameservers 8.8.8.8
+In order to see changes do ifup and ifdown
+(
+Above will do it, if not, try following too
+systemctl restart networking
+systemctl restart network-manager
+resolvconf -u (this updates own database)
+resolvconf -d enp0s8 (updates - automatically happens when you do ifdown/ifup)
+)
+
 To install dns server. 
 sudo apt-get install bind9
 
@@ -8,7 +19,7 @@ sudo vim /etc/bind/named.conf.options
 listen-on port 53 { any; };
 allow-query {any;};
 recursion yes;
-(It didn't work on vagrant vm)
+(It didn't work on vagrant vm(precise) but worked on xenial)
 
 Authoritative Forward Zone (Worked at vagrant vm)
 "

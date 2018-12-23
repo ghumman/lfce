@@ -1,4 +1,78 @@
-sudo apt-get install vsftpd
-sudo apt-get install lftp
+sudo apt-get install vsftpd (server)
+sudo apt-get install lftp (client, in maunual its ftp)
+
+ftp default folder in ubuntu: 
+/srv/ftp
+
+Create a /srv/ftp/uploads as dropbox
+sudo mkdir -m 730 /srv/ftp/uploads (as root user, but any user will be able to upload as group will be changed to ftp)
+chown root.ftp /srv/ftp/uploads
+
+Make following changes to file '/etc/vsftpd.conf'
+anonymous_enable=YES
+anon_upload_enable=YES
+write_enable=YES
+
+After restarting service
+
+Use following to confirm that user is part of group ftp
+id user (if not use following to add to ftp)
+usermod -aG ftp user
+
+Inorder to upload or drop the file. 
+1) cd dir/where/file/exists (localhost or remote)
+2) enter username/password (Or inside ftp enter user 'username')
+3) cd /srv/ftp/uploads (cd to dir where you need to upload)
+4) put file1.txt (file1.txt was present in the directory where we started doing ftp, other files cannot be uploaded)
 
 
+
+TFTP
+
+sudo apt-get install tftpd tftp(tftp for tftp clinet)
+(Because this doesn't need to be started all the time, so no systemd directly)
+sudo apt-get install xinetd
+services which can be started using xinetd are under /etc/xinetd.d directory
+Other services which 'manual' uses with xinetd are:
+i)	rsync (for centos/opensuse only, not for ubuntu, use update-rc.d instead)
+ii)	telnet (for ubuntu only )
+
+All default files inside /etc/xinetd.d/ are missing following arguments which we need.
+        server          = /usr/sbin/in.tftpd
+        server_args     = /tftpboot
+No need for following if copied like cp /etc/xinetd.d/time /etc/xinetd.d/tftp
+        type            = INTERNAL
+        id              = time-dgram
+Complete /etc/xinetd.d/tftp
+service tftp
+{
+        disable         = no
+        socket_type     = dgram
+        protocol        = udp
+        user            = root
+        wait            = yes
+        server          = /usr/sbin/in.tftpd
+        server_args     = /tftpboot
+}
+//
+If you don't give port, it will take default port for tftp which is 69(protocol is udp)
+Create the directory with right chmod and chown mentioned at server_args
+sudo mkdir /tftpboot
+sudo chmod -R 777 /tftpboot
+Restart xinetd, you'll see at the bottom: Started working: 1 available service
+Another way to confirm that tftp is running, use following 
+ss -tuna(or netstat -tulpen) | grep 69
+
+Now remote client will be able to download/get what is in /tftpboot using following
+tfpt client1
+get file1.txt
+
+######################################################
+# Blocking Connection using TCP Wrappers
+######################################################
+Add following to /etc/vsftpd.conf
+tcp_wrappers=yes
+Restart vsftpd
+Add following to /etc/hosts.deny
+vsftpd: ALL
+telnet localhost ftp
