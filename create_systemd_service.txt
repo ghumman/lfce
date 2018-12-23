@@ -1,0 +1,27 @@
+Packages we install normally reside at
+/usr/bin (system related binaries in /usr/sbin)
+
+Two locations where we can put Systemd packages 
+/usr/lib/systemd/	(Create a directory system and put the foo.service in it)
+/etc/systemd/system	(Put foo.service in it. Also can make directory foo.service.d and put 00-foo.conf to add features, make changes)
+(/etc/systemd/system has precedence over /usr/lib/systemd/system)
+00-foo.conf 
+[Service]
+ExecStart=
+ExecStart=/usr/bin/stress --cpu 3 --io 3 --vm 3 --vm-bytes 32M  --timeout 9s
+
+systemd-delta will tell which systemd configuration is used(will only tell either /usr/lib/systemd or /etc/systemd used). 
+
+Slices are used for additional features. Add a file foo.slice inside /etc/systemd/system/ and declare this slice inside /etc/systemd/system/foo.service.d/00-foo.conf
+foo.slice
+[Unit]
+Description= slice of stress from /etc/systemd/system/
+[Slice]
+CPUQuota=2%
+(Then at the bottom of the file 00-foo.conf add following line)
+Slice=foo.slice
+
+Command 'systemctl daemon-reload' will reload configuration file of systemd unit
+
+
+
