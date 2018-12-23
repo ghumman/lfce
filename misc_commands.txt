@@ -49,3 +49,8 @@ If service is Upstart: Use 'mv /etc/init/smbd.conf /etc/init/smbc.conf.disabled'
 If service is Systemd: Use systemctl enable/disable command. 
 
 When creating Self Signed keys for SSL using openssl, the option -nodes (not decrypted -> maybe) is used to encrpty the private key. If this optin is provided it will ask for passphrase. In case, openssl is used to create key and crt to be used in dovecot ssl, this argument should be used, otherwise you won't be able to connect to mail server. 
+
+For creating problems in network packets
+tc qdisc add dev lo root netem loss random 40
+tc qdisc del dev lo root
+

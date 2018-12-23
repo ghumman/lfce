@@ -29,7 +29,12 @@ tcpdump/wireshark:
 	dump traffic on a network
 	tcpdump -i wlp1s0 -w capture.pcap (write results to capcure.pcap)
 	tcpdump -i wlp1s0 port 21 (for ftp)
+	tcpdump -i wlp1s0 proto ICMP (for ping)
 
 ss:
 	socket statistics	(netstat: deprecated)
 	ss -tua	(t:tcp u:udp a:all)
+	(Normally used)
+	ss -tuna
+	netstat -tulpen
+	netstat -taupe
