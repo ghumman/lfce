@@ -1,0 +1,15 @@
+Install vlan
+sudo apt-get install vlan
+
+(May need it)Load kernel 8021q
+sudo modprobe 8021q
+
+Add following to /etc/network/interfaces
+auto eth1.7
+iface eth1.7 inet static
+	address 10.10.0.0
+	netmask 255.255.255.0
+	vlan-raw-device eth1
+
+Apply
+sudo ifup eth1.7

@@ -1,0 +1,13 @@
+<Location /secure/>
+        AuthType Basic
+        AuthName "Restricted Area"
+        AuthUserFile secure.users
+        Require valid-user
+</Location>
+htpasswd -c secure.users vagrant
+
+#When setting SASL for postfix using dovcot
+postconf -e "smtpd_recipient_restrictions=permit_mynetworks,permit_sasl_authenticated,reject_unauth_destination"
+echo -en "\0vagrant\0vagrant" | base64
+(When SASL is up and TLS auth only is up, use following)
+gnutls-cli --crlf --starttls --insecure --port 25 <IP ADDRESS>

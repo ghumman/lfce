@@ -1,0 +1,37 @@
+Client1:
+auto eth1.7
+iface eth1.7 inet static
+        address 10.10.0.10
+        netmask 255.255.255.0
+        vlan-raw-device eth1
+        up route add -net 10.10.0.0 netmask 255.255.255.0 gw 192.168.33.40
+
+auto eth1.8
+iface eth1.8 inet static
+        address 192.168.4.100
+        netmask 255.255.255.0
+        vlan-raw-device eth1
+        up route add -net 192.168.4.0 netmask 255.255.255.0 gw 192.168.33.40
+	up route add -net 10.20.0.0 netmask 255.255.255.0 gw 192.168.33.40
+Client2:
+auto eth1.9
+iface eth1.9 inet static
+        address 192.168.4.110
+        netmask 255.255.255.0
+        vlan-raw-device eth1
+        up route add -net 192.168.4.0 netmask 255.255.255.0 gw 192.168.33.30
+auto eth1.8
+iface eth1.8 inet static
+        address 10.20.0.10
+        netmask 255.255.255.0
+        vlan-raw-device eth1
+        up route add -net 10.20.0.0 netmask 255.255.255.0 gw 192.168.33.30
+
+Client3:
+auto enp0s8.7
+iface enp0s8.7 inet static
+      address 10.20.0.20
+      netmask 255.255.255.0
+      vlan-raw-device enp0s8
+      up route add -net 10.20.0.0 netmask 255.255.255.0 gw 192.168.33.20	
+      up route add -net 10.10.0.0 netmask 255.255.255.0 gw 192.168.33.20
