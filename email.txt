@@ -13,6 +13,8 @@ sudo postconf -e "inet_interfaces=all"
 #enable trusted subnets
 sudo postconf -e "mynetworks_style=subnet"
 
+# In order to send mail to remote server use ip address not the hostname otherwise will get DNS MX records error inside /var/log/mail.log
+# rcpt to: root@[192.168.33.10]
 
 On client(192.168.33.10): 
 telnet 192.168.33.1 25
@@ -30,7 +32,8 @@ Test if we get the mail on server.
 # it's already not installed
 
 # Above assumption is wrong. mail can be used to send mail like following from terminal
-# mail -s "How are you?" client1@localhost
+# mail -s "How are you?" client1@localhost (This gives DNS MX record error if we use hostname for remote computer)
+# mail -s "How are you?" client1@[192.168.33.20] (Using this I was able to send email from one server to another server)
 Cc
 (Keep writing once you're done, press <Ctrl+D>)
 sudo apt-get install mailutils

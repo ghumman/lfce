@@ -1,7 +1,11 @@
+best place to find port numbers and their names is following 
+/etc/services
+
 21	  ftp
 22	  ssh
 23	  telnet
 25	  smtp
+53	  dns
 53	  domain
 63	  tftp
 80	  http
@@ -18,6 +22,7 @@
 2049	  nfs
 2200	  ici
 2222	  EtherNetIP-1
+3000	  ntop
 3000	  ppp
 3128	  squid-http
 3306	  mysql

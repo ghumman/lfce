@@ -43,7 +43,8 @@ Modify following files
 
 zebra=yes
 ospfd=yes
-
+Copy following sample files from /usr/share/doc/quagga/ to /etc/quagga
+ 
 Create /etc/quagga/zebra.conf
 
 interface eth0
