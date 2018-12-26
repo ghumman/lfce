@@ -1,6 +1,13 @@
 Stop/Disable Firewall
 systemctl stop firewalld
 systemctl disable firewalld
+Do not install firewalld
+sudo apt-get purge firewalld (if installed mistakenly)
+
+Before doing anything with NAT tables, make sure following give output: 1
+cat /proc/sys/net/ipv4/ip_forward
+If output is 0, uncomment following line from /etc/sysctl.conf
+net.ipv4.ip_forward=1
 
 
 List all rules (S for Specifications)
@@ -59,7 +66,7 @@ modprobe -a ip_tables	(a: all)
 Check System and Service Manager
 ps --pid 1
 
-An Example of Iptables, this is give you internet access .
+An Example of Iptables, this will give you internet access .
 sudo iptables -P INPUT DROP
 sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
@@ -137,6 +144,7 @@ Replace a rule with another rule. Following will replace rule 2 from INPUT
 	iptables -R INPUT 2 -i eth0 -s 0/0 -p tcp --dport 2049 -j REJECT
 
 Save the rules and restoring them manually(though at bootup they automatically restore from saved file).
+	sudo apt-get install iptables-persistent
 	iptables-save > /etc/iptables/rules.v4
 	iptables-restore < /etc/iptables/rules.v4
 	(Other method for ubuntu)
@@ -146,3 +154,5 @@ Save the rules and restoring them manually(though at bootup they automatically r
 	sudo netfilter-persistent save
 	sudo netfilter-persistent reload
 
+#EXAMPLE: let icmp(ping), http work from client to server, just block ssh from a particular client
+sudo iptables -A INPUT -s client4 -p tcp --dport ssh -j REJECT	(ssh can be replaced with 22)

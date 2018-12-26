@@ -39,6 +39,19 @@ Use tar -xzvf and -czvf and -tvf (z for gzip).
 
 
 4) dpkg (--contents, --install or -i, --remove or -r)  
+Summary:
+tar -czvf cpphelloworld-1.0.tar.gz cpphelloworld-1.0/
+mkdir WORK
+mv cpphelloworld-1.0.tar.gz WORK/
+cd WORK
+tar -xzvf cpphelloworld-1.0.tar.gz
+cd cpphelloworld-1.0/
+dh_make -f ../cpphelloworld-1.0.tar.gz
+dpkg-buildpackage -uc -us
+dpkg --contents ../cpphelloworld_1.0-1_amd64.deb
+sudo dpkg --install ../*.deb
+dpkg --remove cpphelloworld
+
 
 My Example Makefile 
 

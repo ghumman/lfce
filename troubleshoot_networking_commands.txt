@@ -35,6 +35,27 @@ ss:
 	socket statistics	(netstat: deprecated)
 	ss -tua	(t:tcp u:udp a:all)
 	(Normally used)
-	ss -tuna
+	ss -tuna (will not show names)
+	ss -tua (will show names of services)
+	ss -ltn (will tell you listening ports)
 	netstat -tulpen
 	netstat -taupe
+
+ip -s link: 
+	This will show information about packets which is shown by ifconfig
+
+ethtool -S wlp1s0: 
+	Statistics for device wlp1s0
+
+iptraf: 
+	real time traffic on the computer
+
+ntop: 	
+	start the service and use it from browser(it runs as a server), http://localhost:3000
+
+sysctl -a: 
+	shows all the network parameters which can be modified
+	
+
+
+

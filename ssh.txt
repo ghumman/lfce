@@ -16,7 +16,10 @@ Port Forwarding
 	(Testing) w3m http://localhost:4444
 	
 	Install apache server on 192.168.33.20
-	ssh -fNL 5555:localhost:80 root@192.168.33.20
+	ssh -fNL 5555:localhost:80 root@192.168.33.20 
+	(or )ssh -fNL 5555:192.168.33.20:80 root@192.168.33.20
+	(another way to do it is following)
+	ssh -f root@192.168.33.20 -L 5555:192.168.33.20:80 -N
 	(Testing) w3m http://localhost:5555
 	
 	ssh to client2 using a different port
@@ -61,3 +64,9 @@ SSH using alias
 	host friend
 		hostname client1
 		user vagrant
+
+#Stop a client to connect using TCP Wrappers
+sudo vim /etc/hosts.deny
+sshd: 192.168.33.40
+#Also if you want log this information, use following
+sshd: 192.168.33.40 \ : spawn /bin/echo $(/bin/date) %a access denied >> /var/log/sshd \ :deny

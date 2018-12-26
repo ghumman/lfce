@@ -54,3 +54,14 @@ For creating problems in network packets
 tc qdisc add dev lo root netem loss random 40
 tc qdisc del dev lo root
 
+To see what packages are available
+sudo apt search ntop
+
+#Check which version of software is on the system
+dpkg -l open-vm-tools
+#To update
+sudo apt-get install --only-upgrade open-vm-tools
+(or) apt install --only-upgrade open-vm-tools
+
+#Change home directory
+usermod -d /dir/ user
