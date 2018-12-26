@@ -1,0 +1,28 @@
+#To see partitions
+sudo fdisk -l (cat /proc/partitions) (lsblk)
+(Let's say you see three devices)
+/dev/xvdf, /dev/xvdj, /dev/xvdg
+# To reread partitions
+partprobe /dev/sdX (or just partprobe)
+
+#If not already installed
+sudo apt-get install lvm2
+
+#Create lmv
+pvcreate /dev/xvdf /dev/xvdj /dev/xvdg (physical volume created)
+vgcreate ghumVol /dev/xvdf /dev/xvdj /dev/xvdg (volume group created)
+lvcreate -l 100%FREE -n devdisks ghumVol (logical volume created)
+
+#Display logical volume
+lvdisplay
+
+#Put filesystem
+(Install ext4 if shrinking and growing is needed at a later stage)
+(xfs doesn't allow shrinking of filesystem, it can only grow)
+mkfs.ext4 /dev/ghumVol/devdisks
+
+#Mount
+mkidr /mnt/newvol
+sudo mount /dev/ghumVol/devdisks /mnt/newvol
+
+

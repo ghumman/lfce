@@ -1,0 +1,86 @@
+#Ext4
+mkfs.ext4 --help
+mkfs.ext4 -b 1024 -L myfs /dev/loop1p1	(b=byte, L=label)
+mkdir /mnt/myfs_dir
+fmount /dev/loop1p1 /mnt/myfs_dir
+(always have lost+found in ext4 fs, and it is used my fsck )
+
+#xfs
+mkfs.xfs --help
+mkfs.xfs -L XFSFS /dev/loop1p5
+mkdir /mnt/fsloop1part5xfs
+#mount
+mount /dev/loop1p5 /mnt/fsloop1part5xfs/
+(or) mount LABEL=XFSFS /mnt/fsloop1part5xfs/
+
+#btrfs
+mkdir /mnt/fsloop2part1brf
+mkfs.btrfs --help
+(Got error: Minimum size for each btrfs device is 41943040)
+
+# permanent changes after reboot using /etc/fstab
+# add following lines
+/dev/loop1p1    /mnt/fsloop1part1ext4/  ext4    defaults        0 0
+/dev/loop1p5    /mnt/fsloop1part5xfs/   xfs     defaults        0 0
+
+#mount everything in /etc/fstab
+mount -a
+
+# show all mounts
+mount
+
+# mounting using systemctl
+cp /lib/systemd/system/dev-mqueue.mount /etc/systemd/system/ext4.mount
+vim /etc/systemd/system/ext4.mount
+#change following
+What=/devloop1p1
+Where=/ext4	#(This has to match unit name)
+Type=ext4
+Options=defaults
+
+systemctl daemon-reload
+systemctl restart ext4.mount
+
+# Swap partition. 
+fdisk /dev/loopxx	(fdisk can also be used to change partition type)
+>t (change partition type)
+>l (list all codes for all partition types)
+>82 (for swap)
+>p (show partitions)
+>w 
+
+#Swap filesystem
+mkswap /dev/loopxxxx
+free -h
+swapon /dev/loopxxxx (manual)
+free -h
+(mount /etc/fstab)
+/dev/loopxxx	swap	swap	defaults	0 0	(2nd column, no need for slash)
+(to mount)
+swapon -a
+
+#Encrypted device
+cryptsetup luksFormat /dev/loop2p1
+YES
+passphrase:
+#see the contents of encrypted device
+xxd /dev/loop2p1	(hexadecimal viewer)
+#open the encrypted device
+cryptsetup luksOpen /dev/loop2p1 secret
+
+#resulted device will be following
+/dev/mapper/secret
+
+mkfs.ext4 /dev/mapper/secret
+mkdir /mnt/secret
+mount /dev/mapper/secret /mnt/secret/
+cd /mnt/secret
+touch this_file_resides_on_secret_partition.txt
+umount /mnt/secret/
+#automate
+sudo vim /etc/crypttab
+secret  /dev/loop2p1	#(password will be required at bootup)
+sudo vim /etc/fstab
+/dev/mapper/secret      /mnt/secret     ext4    noauto  0 0
+
+

@@ -1,0 +1,14 @@
+#By default we have apparmor but very basic.
+sudo apt install apparmor-profiles
+sudo apt install apparmor-utils
+
+#status
+aa-status
+
+#profile location
+/etc/apparmor.d/
+
+#Create a profile
+aa-genprof
+
+

@@ -1,0 +1,6 @@
+#Install
+yum install openldap compat-openldap openldap-clients openldap-servers nss-pam-ldapd
+
+systemctl start slapd
+
+slappasswd -h {SSHA} -s password
