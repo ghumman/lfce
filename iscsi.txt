@@ -1,0 +1,78 @@
+(internet small computer system interface)
+(shared volumes in containered clusters)
+(Server -> Target, Client -> Initiator)
+
+#Target
+#install
+apt-get -y install targetcli
+#Create directory
+mkdir /var/iscsi_disks
+#Admin console
+targetcli
+>cd backstores/fileio
+>create disk01 /var/iscsi_disks/disk01.img 5M (create disk image)
+>cd /iscsi
+>create iqn.2018-12.com.ghumman:storage.target00
+>cd iqn.2018-12.com.ghumman:storage.target00/tgp1/portals
+>create 192.168.33.20
+>cd ../luns 
+>create /backstores/fileio/disk01 (set luns)
+>cd ../acls
+>create iqn.2018-12.com.ghumman:www.ghumman.com (set acls)
+>cd iqn.2018-12.com.ghumman:www.ghumman.com
+>set auth userid=username
+>set auth password=password
+>exit
+>y
+#Confirm server is listening
+ss -napt | grep 3260
+(also a file will be created) cat /etc/target/scsi_target.lio 
+#Restart target
+
+#######################################################################
+# Following is old and shouldn't be used
+#######################################################################
+#install
+sudo apt-get -y install tgt lvm2
+#to create /dev/loopxx
+dd if=/dev/zero of=6MB_HDD.img bs=1M count=6
+sudo losetup -Pf --show 6MB_HDD.img
+pvcreate /dev/loop0
+vgcreate ghumman_iscsi /dev/loop0 (you can use vgs to confirm)
+lvcreate -l 100%FREE -n ghumman_lun1 ghumman_iscsi (lvs to confirm)
+(above will create logical volume, following will create acutal lun logical unit number)
+sudo vim /etc/tgt/conf.d/ghumman_iscsi.conf
+"
+<target iqn.2018-10.ghumman.com:lun1>
+     # Provided device as an iSCSI target
+     backing-store /dev/mapper/ghumman_iscsi-ghumman_lun1
+     initiator-address 192.168.33.20
+    incominguser user password
+     outgoinguser user password
+</target>
+"
+sudo systemctl restart tgt
+#Check the status of iscsi target lun partition 
+tgtadm --mode target --op show
+#Had to had following line to make it work (was getting no portal found error {acl issue})
+#############################################################
+# Above is old and shouldn't be used
+#############################################################
+
+
+#Initiator
+#Discover
+iscsiadm -m discovery -t st -p 192.168.33.20
+(or) iscsiadm --mode discovery --type sendtargets --portal 192.168.33.20
+#Check status
+iscsiadm -m node -o show
+#Connect
+#vim /etc/iscsi/iscsid.conf
+node.session.auth.authmethod = CHAP
+node.session.auth.username = user
+node.session.auth.password = password
+#sudo vim /etc/iscsi/initiatorname.iscsi
+InitiatorName=iqn.2018-10.ghumman.com:lun1
+#Login
+iscsiadm -m node --login
+(or) iscsiadm --mode node --targetname iqn.2018-10.ghumman.com:lun1 --portal 192.168.33.20 --login

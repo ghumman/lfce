@@ -1,0 +1,28 @@
+(preboot execution environment)
+
+#Install dhcp server
+sudo apt-get install isc-dhcp-server
+sudo vim /etc/default/isc-dhcp-server
+INTERFACES="enp0s8"
+sudo vim /etc/dhcp/dhcpd.conf
+"
+option domain-name "client1.org";
+option domain-name-servers ns1.client1.org;
+authoritative;
+subnet 192.168.33.0 netmask 255.255.255.0 {
+  range 192.168.33.48 192.168.33.50;
+}
+host ubuntu-client2 {
+ hardware ethernet 08:00:27:8e:42:67;
+ fixed-address 192.168.33.49;
+ }
+sudo systemctl restart isc-dhcp-server
+"
+
+#Install PXE along with tftp
+sudo apt-get install apache2 tftpd-hpa inetutils-inetd
+
+Rest of guide can be following from following link, it's real stuff, can't try it out on VMs. 
+
+https://www.ostechnix.com/how-to-install-pxe-server-on-ubuntu-16-04/
+

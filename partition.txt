@@ -1,0 +1,47 @@
+#Create a hard drive/image
+a) Using loop devices
+
+dd if=/dev/zero of=500MB_HDD.img bs=1M count=512	(total size will be 1M*512)
+# Now there're two options, i) create the /dev/loopx and then use fdisk (to create partitions) and mkfs.ext4 (to create file system). ii) Create partition using fdisk and filesystem using mkfs.xxxxx and then make /dev/loopxx. Use following command to make /dev/loopxx
+sudo losetup -Pf --show 500MB_HDD.img	(losetup:loopback setup, -P tell os new dev is there, -f find first loop device available, --show display which loop device created) 
+
+#To see partitions
+cat /proc/partitions
+(or)
+sudo fdisk -l
+
+#Partition (MBR)
+sudo fdisk /dev/loop3p1
+(p to print current table)
+m -> manual/help
+n -> create new partition
+p/e -> primary (up to 4) / extended
+number -> partition number
+first sector
+last sector -> +500M/+1G
+p -> print current tables
+w -> write it
+q -> quit
+# When creating extended partition, created another logical partition on top of it as extended is like an empty container and and logical partition needs to go on it.
+
+#Use partprobe /dev/xxxxx to synchronize
+
+partprobe /dev/sdc ; inform the os about partition
+
+#Partition (GPT)
+sudo gdisk /dev/loop2
+
+#Write filesystem to partition
+Go to filesystem.txt
+
+
+# Swap partition. 
+fdisk /dev/loopxx	(fdisk can also be used to change partition type)
+>t (change partition type)
+>l (list all codes for all partition types)
+>82 (for swap)
+>p (show partitions)
+>w 
+
+#encrypted partition. 
+checkout filesystemt.txt

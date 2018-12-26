@@ -1,0 +1,8 @@
+#system-installed rules
+/usr/lib/udev/rules.d/
+
+#custom-made rules
+/etc/udev/rules.d/
+
+#reloading the rules
+udevadm control --reload`

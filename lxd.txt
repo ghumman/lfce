@@ -1,0 +1,34 @@
+#Install
+sudo apt-get install lxd
+
+#Add User
+sudo adduser lxd vagrant
+newgrp lxd
+
+#Setting lxd using ZFS storage backend
+sudo apt-get install zfsutils-linux
+
+#Initialize
+sudo lxd init
+
+#List all VM
+lxc list
+
+#List available images
+sudo lxc image list images: | grep ubuntu
+
+# Launch a VM
+lxc launch ubuntu:16.04
+(or) lxc launch images:ubuntu/16.04 myweb
+
+#Execute commands inside container 
+lxc exec ace-wren /bin/bash (ace-wren is name of instance)
+
+#Stop vm container
+lxc stop ace-wren
+
+#Delete vm container
+lxc delete ace-wren
+
+
+

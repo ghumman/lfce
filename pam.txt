@@ -1,0 +1,17 @@
+#Check if application/program is pam aware
+ldd $(which sshd) | grep pam
+
+#Format of files inside /etc/pam.d/****
+type (account, auth, password, session) 
+control-flag (requisite, required, sufficient, optional, ...)
+module (pam_mail.so, pam_env.so, pam_selinux.so, ....)
+module-arguments (open, force, revoke, ...)
+
+#Restrict root access to ssh service via pam
+1) Add following line to /etc/pam.d/sshd and /etc/pam.d/login
+auth    required        pam_listfile.so onerr=succeed  item=user  sense=deny  file=/etc/ssh/deniedusers
+2) sudo vim /etc/sshd/deniedusers
+root
+
+
+

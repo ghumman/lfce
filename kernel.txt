@@ -1,0 +1,24 @@
+#check which modules(drivers) are loaded
+lsmod
+
+#manually load a module
+modprobe xxxxx
+
+#remove/unload a module
+modprobe -r xxxxx
+
+#info about a module
+modinfo xxxxxx
+
+#EXAMPLE: disable ipv6 using kernel proc 
+cd /proc/sys/net/ipv6/conf/all
+echo 1 > disable_ipv6 (need to be sudo user, vim won't work)
+# If you want to keep it this way even after reboot
+sudo vim /etc/sysctl.d/
+echo net.ipv6.conf.all.disalbe_ipv6 = 1 > ipv6.conf
+
+#See all tunables 
+sysctl -a
+sysctl -a | wc
+
+

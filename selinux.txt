@@ -1,0 +1,32 @@
+#Install
+sudo systemctl stop apparmor
+sudo systemctl disable apparmor
+sudo apt-get purge apparmor
+(Even doing all these selinux wasn't enforcing/working no xenial but worked on preciese)
+sudo apt-get install selinux
+
+#Enable
+sudo vim /etc/selinux/config
+SELINUX=permissive
+reboot
+
+#Get Status
+getenforce
+
+#Toggle between Permissive and Enforceing
+setenforce
+
+#See context labels
+ls -Zl	(Z - option, context type is third option)
+
+#EXAMPLE: if a webserver page is giving an error. 
+Check getenforce
+Set setenforce 0 and test that webpage is working. 
+Confirm that context type is mismatching by using following commands
+ls -lZ /var/www/html (or /var/www/)
+ls -lZ /var/www/html/index.html
+To fix use following command, and then setenforce 1
+sudo restorecon -R /var/www/html/web-api/
+
+
+
