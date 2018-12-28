@@ -104,3 +104,5 @@ create a policy at /etc/bind/zones for example.com
 >JAVE=xxxx
 setup environment variable and confirm using ssh
 
+>sed
+Question to do a lot of things with file manipulation, like delete all redundant lines, delete second column, and many more. 
