@@ -1,0 +1,14 @@
+apt-get install «pkg»=«version»
+sudo apt-get -t=<target release> install <package-name>
+
+apt-cache showpkg <package-name> # lists all available versions
+apt-mark hold <package-name> # "holds" the package at the current version, preventing automatic upgrades.
+
+#Check current version and candidate version of a package
+apt-cache policy <package-name>
+
+#Run simulation of upgrading a software package
+apt-get -s install vim
+
+#Run simulation of upgrading all packages
+apt-get -V -s upgrade

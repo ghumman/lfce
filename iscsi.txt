@@ -11,7 +11,7 @@ mkdir /var/iscsi_disks
 targetcli
 >cd backstores/fileio
 >create disk01 /var/iscsi_disks/disk01.img 5M (create disk image)
->cd /iscsi
+>cd ../../iscsi
 >create iqn.2018-12.com.ghumman:storage.target00
 >cd iqn.2018-12.com.ghumman:storage.target00/tgp1/portals
 >create 192.168.33.20
@@ -61,6 +61,7 @@ tgtadm --mode target --op show
 
 
 #Initiator
+sudo apt install open-iscsi
 #Discover
 iscsiadm -m discovery -t st -p 192.168.33.20
 (or) iscsiadm --mode discovery --type sendtargets --portal 192.168.33.20

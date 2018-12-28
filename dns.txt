@@ -81,7 +81,7 @@ $TTL    604800
                          604800 )       ; Negative Cache TTL
 ;
 @       IN      NS      localhost.
-$GENERATE 1-254 $      IN      PTR       host$.example.com 
+$GENERATE 1-254 $      IN      PTR       host$.example.com. 
 
 Check the syntax using following command
 sudo named-checkconf -z

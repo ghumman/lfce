@@ -1,6 +1,45 @@
+#Centos guide
 #Install
 yum install openldap compat-openldap openldap-clients openldap-servers nss-pam-ldapd
 
 systemctl start slapd
 
 slappasswd -h {SSHA} -s password
+
+cd LDAP/LDAP/
+vim initial.ldif
+
+(paste password as oldRootPw: {SSHA}...)
+
+# import 
+ldapmodify -Y external -H ldapi:/// -f initial.ldif
+
+# import 
+for i in cosine nis inetorgperson; do ldapadd -Y external -H ldapi:/// -f /etc/openlap/schema/$i.ldif; done
+
+#add ous and users
+ldapadd -x -W -D "cn=ldapadm,dc=la,dc=local" -f ous.ldif
+(write password)
+ldapadd -x -W -D "cn=ldapadm,dc=la,dc=local" -f users.ldif
+
+#setup pam to authenticate locally
+authconfig --enableldap --enableldapauth --ldapserver=localhost --ldapbasedn="dc=la,dc=localhost" --enablemkhomdir --update
+# restart caching daemon
+systemctl restart nslcd 
+# id tcox
+# id pinehead
+
+#setup pam on client
+yum install openldap-clients nss-pam-ldapd -y
+authconfig --enableldap --enableldapauth --ldapserver=10.0.1.100 --ldapbasedn="dc=la,dc=localhost" --enablemkhomdir --update
+restart caching daemon
+systemctl restart nslcd
+# id tcox
+# id pinehead
+
+#Run and test on either client or server
+ldappasswd -s password -W -D "cn=ldapadm,dc=la,dc=local" -x "uid=pinehead,ou=People,dc=la,dc=local"
+ssh pinehead@localhost
+
+
+

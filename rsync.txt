@@ -1,0 +1,21 @@
+# rsync over ssh
+rsync -av /tmp/transfer-lab/*.bin root@localhost:/tmp/receive/.	(similar to scp, a=archieve, v=verbose)
+
+#sharing a folder over rsync protocol
+#inside server
+mkdir /srv/rsync/
+for i in /srv/rsync/{a,b,c}-{1,2,3}.{txt,log,bin}
+do
+echo $i > $i
+done
+#create /etc/rsyncd.conf
+vim /etc/rsyncd.conf
+[default]
+	path = /srv/rsync
+	comment = default rsync files
+# modify /etc/default/rsync
+RSYNC_ENABLE=true
+# see rsync shared modules
+rsync localhost::
+#from client
+rsync -av 192.168.33.20::default from_client2/.

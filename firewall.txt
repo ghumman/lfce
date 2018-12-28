@@ -156,3 +156,5 @@ Save the rules and restoring them manually(though at bootup they automatically r
 
 #EXAMPLE: let icmp(ping), http work from client to server, just block ssh from a particular client
 sudo iptables -A INPUT -s client4 -p tcp --dport ssh -j REJECT	(ssh can be replaced with 22)
+sudo iptables -A INPUT -s client4 -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -s client4 --protocol icmp -j ACCEPT

@@ -28,5 +28,13 @@ ls -lZ /var/www/html/index.html
 To fix use following command, and then setenforce 1
 sudo restorecon -R /var/www/html/web-api/
 
+EXAMPLE: change context type of directory /srv/lab and everything under it
+semanage fcontext -a -t samba_share_t "/srv/lab(/.*)?"
+restorecon -Rv /srv/lab
 
+EXAMPLE: change context type of directory /srv/ftp/upload and everyhtin under it
+semanage fcontext -a -t public_content_rw_t "/srv/ftp/upload(/.*)?"
+restorecon -Rv /srv/ftp/upload
 
+#Check anonymous ftp user is allowed to write or not
+getsebool -a | grep ftp

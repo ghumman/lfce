@@ -8,13 +8,26 @@ partprobe /dev/sdX (or just partprobe)
 #If not already installed
 sudo apt-get install lvm2
 
-#Create lmv
+# Create an lvm partition. 
+gdisk -l /dev/loop0
+n
+(select size)
+L (to lookup the codes)
+8e00	(lvm type)
+w
+
+#sync
+partprobe /dev/xxxx
+
+
+#Create lvm
 pvcreate /dev/xvdf /dev/xvdj /dev/xvdg (physical volume created)
 vgcreate ghumVol /dev/xvdf /dev/xvdj /dev/xvdg (volume group created)
 lvcreate -l 100%FREE -n devdisks ghumVol (logical volume created)
 
 #Display logical volume
 lvdisplay
+(or) lvs
 
 #Put filesystem
 (Install ext4 if shrinking and growing is needed at a later stage)
@@ -25,4 +38,26 @@ mkfs.ext4 /dev/ghumVol/devdisks
 mkidr /mnt/newvol
 sudo mount /dev/ghumVol/devdisks /mnt/newvol
 
+#Note
+Just like encrypting partitions create /dev/mappers/xxxx, lvm also creates devices with symlink inside /dev/mappers and also /dev/vgdata/lvdata.
 
+# change properties of filesystems which are already created use tune2fs
+tune2fs  -L lvdata /dev/vgdata/lvdata
+
+#mounting using Labels in /etc/fstab
+LABEL=lvdata	/lvmount/point	ext4	defaults	0 0
+
+#mounting using UUID in /etc/fstab
+#to find out uuid of filesystem, use "blkid" (can use with double quotes or without it)
+UUID="xxxxxxxxxxxxxx"	/lvmount/point	ext4	defaults	0 0
+
+# Resize LVM
+pvs, vgs, lvs  show size and free space
+i) create new partition using gdisk/pdisk (using LVM partition)
+ii) vgextend vgdata /dev/newlycreated
+(above command detects that newly created partition is not physical volume so it converts it to physical volume and then adds it to vgdata volume group)
+iii) lvextend -l +100%FREE -r /dev/vgdata/lvdata (r for resize)
+
+# Shrink
+lvreduce -L 800M -r /dev/vgnew/lvnew
+(it will ask permission to unmount, then will resize and will mount it again)
