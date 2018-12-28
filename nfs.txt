@@ -5,6 +5,9 @@ Inside server
 (vim /etc/exports)
 /home/vagrant/nfs_server 127.0.0.1/32(rw) 192.168.33.0/24(ro)
 
+Make changes effective
+exportfs -a
+
 Inside client
 sudo mount 192.168.33.10:/home/vagrant/nfs_server /home/vagrant/remote_share
 

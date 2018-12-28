@@ -27,11 +27,11 @@ Tesing 1, 2, 4
 .
 
 Test if we get the mail on server.
-#mailutils install mail, and i think is only good for viewing emails
+#mailutils install mail
 #mutt shows emails and sends emails, and it installs postfix, if
 # it's already not installed
 
-# Above assumption is wrong. mail can be used to send mail like following from terminal
+# mail can be used to send mail like following from terminal
 # mail -s "How are you?" client1@localhost (This gives DNS MX record error if we use hostname for remote computer)
 # mail -s "How are you?" client1@[192.168.33.20] (Using this I was able to send email from one server to another server)
 Cc
@@ -46,6 +46,7 @@ mail
 At this point without having mutt and dovecott (but having mail and postfix), we can send messages and view messages from the same machine. 
 
 But from a remote machine we can still use tellnet to login to server machine and send from emails from one user to another. but won't be able to see email like using this kind of command. "mutt -f client1@192.168.0.106"
+# above assumption is wrong, later I figured you can send emails by putting ip address inside [].
 
 
 sudo apt-get install mutt dovecot-imapd dovecot-pop3d dovecot-core dovecot-lmtpd
@@ -57,7 +58,7 @@ mutt -f imap://client1@192.168.0.106/
 # It doesn't work on different machine because other machine it's looking for TLS(transport layer security) / SSL (secure socket layer). After enabling it in next step, above command work on remote host
 
 ###########################################################
-#Enforce TLS/SSL for IMAP server
+#Enforce TLS/SSL for IMAP server i.e. inside Dovecot
 ###########################################################
 sudo vim /etc/dovecot/conf.d/10-ssl.conf
 #Edit 
@@ -93,4 +94,42 @@ sudo postconf -e "smtpd_recipient_restrictions = 	\
 	permit_mynetworks,				\
 	permit_sasl_authenticated,			\
 	reject_unauth_destination"
+postconf -e "smtpd_sasl_path = private/auth"
+systemctl restart postfix
+
+#Using telnet after enabling sasl
+Copy output of following command
+echo -en "\0student\0student" | base64 -> AHN0dWRlbnQAc3R1ZGVudA==
+telnet localhost 25
+helo localhost
+auth plain AHN0dWRlbnQAc3R1ZGVudA==
+mail from ...
+
+###########################################################
+# Using both SASL and TLS in Postfix (SASL type = dovecot)
+###########################################################
 	
+postconf -e "smtpd_tls_auth_only = yes"
+postconf -e "smtpd_tls_security_level = may"
+postconf -e "smtpd_tls_cert_file = /etc/postfix/postfix.pem"
+postconf -e "smtpd_tls_key_file = /etc/postfix/postfix.pem"
+
+#creating postfix.pem
+/usr/bin/openssl req -utf8 -newkey rsa:2048 -keyout /tmp/postfix.key -nodes \
+-x509 -days 365 -out /tmp/postfix.crt -set_serial 0
+cat /tmp/postfix.key > /etc/postfix/postfix.pem
+echo "" >> /etc/postfix/postfix.pem
+cat /tmp/postfix.crt >> /etc/postfix/postfix.pem
+rm -f /tmp/postfix.crt /tmp/postfix.key
+
+#restart postfix
+systemctl restart postfix
+
+#test using telnet
+(sudo apt-get install gnutls-bin)
+gnutls-cli --crlf --starttls --insecure --port 25 localhost
+starttls
+Ctrl+d
+auth plain AHN0dWRlbnQAc3R1ZGVudA==
+mail ...
+

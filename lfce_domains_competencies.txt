@@ -1,10 +1,12 @@
 LFCE Domains and Competencies V3.18
+
 Essential Commands – 5%
 
 Use version control tools
 Manipulate file content programmatically
 Run commands on many systems simultaneously
 Install Linux Distribution
+
 Operation of Running Systems – 18%
 
 Monitor, tune and troubleshoot system performance
@@ -21,10 +23,12 @@ Monitor security and conduct audits
 Manipulate Linux system during the recovery process
 Use udev for device detection and management
 Configure and modify SELinux/AppArmor policies
+
 User and Group Management – 10%
 
 Connect to an external authentication source
 Configure advanced PAM
+
 Networking – 15%
 
 Monitor, tune and troubleshoot network performance
@@ -32,6 +36,7 @@ Configure network traffic tunneling
 Configure a system to perform Network Address Translation
 Dynamically route IP traffic
 Implement advanced packet filtering
+
 Service Configuration – 17%
 
 Implement and configure an HTTP server
@@ -44,6 +49,7 @@ Configure host-based and user-based security for a service
 Implement and configure a centralized authentication server
 Implement and configure a PXE Boot server
 Implement and configure an authoritative DNS server
+
 Storage Management – 10%
 
 Manage advanced LVM configuration
@@ -51,6 +57,7 @@ Identify storage devices using block device attributes
 Manage Linux file system features and flags
 Implement and configure remote block storage devices
 Implement and configure network shares
+
 System Design and Deployment – 25%
 
 Define a capacity planning strategy

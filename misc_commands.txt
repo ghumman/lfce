@@ -29,6 +29,7 @@ This file assigns persistent names to network interfaces
 
 Info about distribution
 cat /etc/lsb_release
+cat /etc/os-release
 
 Following file is time based job scheduler
 /etc/crontab
@@ -65,3 +66,7 @@ sudo apt-get install --only-upgrade open-vm-tools
 
 #Change home directory
 usermod -d /dir/ user
+
+# if you want ftp user to log into a specific directory, modify following file.
+/etc/passwd
+

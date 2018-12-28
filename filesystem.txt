@@ -2,7 +2,7 @@
 mkfs.ext4 --help
 mkfs.ext4 -b 1024 -L myfs /dev/loop1p1	(b=byte, L=label)
 mkdir /mnt/myfs_dir
-fmount /dev/loop1p1 /mnt/myfs_dir
+mount /dev/loop1p1 /mnt/myfs_dir
 (always have lost+found in ext4 fs, and it is used my fsck )
 
 #xfs
@@ -54,12 +54,13 @@ mkswap /dev/loopxxxx
 free -h
 swapon /dev/loopxxxx (manual)
 free -h
-(mount /etc/fstab)
+(mounting using /etc/fstab)
 /dev/loopxxx	swap	swap	defaults	0 0	(2nd column, no need for slash)
 (to mount)
 swapon -a
 
 #Encrypted device
+(sudo apt-get install cryptsetup)
 cryptsetup luksFormat /dev/loop2p1
 YES
 passphrase:

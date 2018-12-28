@@ -42,7 +42,7 @@ ss:
 	netstat -taupe
 
 ip -s link: 
-	This will show information about packets which is shown by ifconfig
+	This will show information about packets which are shown by ifconfig. Will also show mac address
 
 ethtool -S wlp1s0: 
 	Statistics for device wlp1s0
