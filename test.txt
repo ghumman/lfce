@@ -1,0 +1,1 @@
+This file is created because .git repos were deleted by mistake. I want to fetch .git from online repositories and see if I can fetch and commit new local files and push the changes again. 
