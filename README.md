@@ -12,6 +12,8 @@ Important preparation links.
 - [Youtube - Linux Foundation Ceritifed Engineer (LFCE)](https://www.youtube.com/watch?v=D0Xob4DGbFQ)
 
 ## Requirements
+https://training.linuxfoundation.org/certification/linux-foundation-certified-engineer-lfce/
+
 Essential Commands 5%
     Use version control tools
     Manipulate file content programmatically
