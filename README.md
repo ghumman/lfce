@@ -58,7 +58,7 @@ https://training.linuxfoundation.org/certification/linux-foundation-certified-en
         Dynamically route IP traffic
         Implement advanced packet filtering
 
-    Service Configuration17%
+    Service Configuration 17%
         Implement and configure an HTTP server
         Implement and configure time synchronization server
         Implement and configure network logging server
