@@ -7,6 +7,7 @@ LFCE
 - https://linuxacademy.com/linux/training/course/name/linux-foundation-certified-systems-engineer
 - https://trainingportal.linuxfoundation.org/learn/course/linux-networking-and-administration-lfs211/
 - [Youtube - Linux Foundation Ceritifed Engineer (LFCE)](https://www.youtube.com/watch?v=D0Xob4DGbFQ)
+- https://app.pluralsight.com/paths/certificate/linux-foundation-certified-engineer-lfce
 
 NETWORK
 - http://www.tecmint.com/installing-network-services-and-configuring-services-at-system-boot/
